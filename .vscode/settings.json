@@ -1,0 +1,8 @@
+{
+    "diffEditor.wordWrap": "on",
+    "editor.wordWrap": "on",
+    "editor.wordWrapColumn": 100,
+    "editor.formatOnSave": true,
+    "html.format.wrapLineLength": 60,
+    "editor.formatOnPaste": true
+}
