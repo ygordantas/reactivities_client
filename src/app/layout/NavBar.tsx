@@ -1,21 +1,11 @@
+import { observer } from "mobx-react-lite";
 import React from "react";
 import { Button, Container, Menu } from "semantic-ui-react";
+import { useStore } from "./stores/store";
 
-interface Props {
-  showForm: () => void;
-  cancelSelected: (selected: undefined) => void;
-  isFormOpen: boolean;
-}
+function Navbar() {
+  const { activityStore } = useStore();
 
-export default function Navbar({
-  showForm,
-  cancelSelected,
-  isFormOpen,
-}: Props) {
-  function clearForm() {
-    cancelSelected(undefined);
-    !isFormOpen && showForm();
-  }
   return (
     <Menu inverted fixed="top">
       <Container>
@@ -29,9 +19,15 @@ export default function Navbar({
         </Menu.Item>
         <Menu.Item name="Activities" />
         <Menu.Item>
-          <Button positive content="Create Activity" onClick={clearForm} />
+          <Button
+            positive
+            content="Create Activity"
+            onClick={() => activityStore.handleFormOpen()}
+          />
         </Menu.Item>
       </Container>
     </Menu>
   );
 }
+
+export default observer(Navbar);

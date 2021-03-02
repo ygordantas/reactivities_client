@@ -4,5 +4,8 @@
     "editor.wordWrapColumn": 100,
     "editor.formatOnSave": true,
     "html.format.wrapLineLength": 60,
-    "editor.formatOnPaste": true
+    "editor.formatOnPaste": true,
+    "files.exclude": {
+        "node_modules": true
+    }
 }
