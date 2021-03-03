@@ -1,12 +1,23 @@
 import { observer } from "mobx-react-lite";
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
+import { Link, useHistory, useParams } from "react-router-dom";
 import { Button, Form, Segment } from "semantic-ui-react";
+import LoadingComponent from "../../../../app/layout/LoadingComponent";
 import { useStore } from "../../../../app/layout/stores/store";
+import { v4 as uuid } from "uuid";
 
 function ActivityForm() {
+  const history = useHistory();
   const { activityStore } = useStore();
-
-  const initialState = activityStore.selectedActivity ?? {
+  const {
+    loadActivity,
+    updateActivity,
+    createActivity,
+    submitting,
+    loadingInitial,
+  } = activityStore;
+  const { id } = useParams<{ id: string }>();
+  const [activity, setActivity] = useState({
     id: "",
     title: "",
     category: "",
@@ -14,14 +25,23 @@ function ActivityForm() {
     date: "",
     city: "",
     venue: "",
-  };
+  });
 
-  const [activity, setActivity] = useState(initialState);
+  useEffect(() => {
+    if (id) loadActivity(id).then((activity) => setActivity(activity!));
+  }, [id, loadActivity]);
 
   function handleSubmit() {
-    activity.id
-      ? activityStore.updateActivity(activity)
-      : activityStore.createActivity(activity);
+    if (activity.id.length === 0) {
+      let newActivity = { ...activity, id: uuid() };
+      createActivity(newActivity).then(() => {
+        history.push(`/activities/${newActivity.id}`);
+      });
+    } else {
+      updateActivity(activity).then(() => {
+        history.push(`/activities/${activity.id}`);
+      });
+    }
   }
 
   function handleInputChange(
@@ -30,6 +50,8 @@ function ActivityForm() {
     const { name, value } = event.target;
     setActivity({ ...activity, [name]: value });
   }
+
+  if (loadingInitial) return <LoadingComponent />;
 
   return (
     <Segment clearing>
@@ -72,17 +94,18 @@ function ActivityForm() {
           onChange={handleInputChange}
         />
         <Button
-          loading={activityStore.submitting}
+          loading={submitting}
           floated="right"
           positive
           type="submit"
           content="Submit"
         />
         <Button
+          as={Link}
+          to="/activities"
           floated="right"
           type="button"
           content="Cancel"
-          onClick={activityStore.handleFormClose}
         />
       </Form>
     </Segment>
